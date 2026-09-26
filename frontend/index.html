@@ -1,0 +1,327 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Versight AI Pre-Editor</title>
+<style>
+  :root {
+    --bg: #0b0e14;
+    --panel: #12161f;
+    --border: #232838;
+    --text: #e7eaf0;
+    --muted: #8b93a7;
+    --accent: #5b8cff;
+    --good: #3ecf8e;
+    --warn: #f0b840;
+    --bad: #f0555c;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+  header {
+    padding: 24px 32px 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  header h1 {
+    margin: 0 0 4px;
+    font-size: 20px;
+    font-weight: 600;
+  }
+  header p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 13px;
+  }
+  main {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    padding: 24px 32px 48px;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+  @media (max-width: 900px) {
+    main { grid-template-columns: 1fr; }
+  }
+  .panel {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px;
+  }
+  .panel h2 {
+    margin: 0 0 12px;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--muted);
+  }
+  label {
+    display: block;
+    font-size: 12px;
+    color: var(--muted);
+    margin: 12px 0 4px;
+  }
+  select, textarea {
+    width: 100%;
+    background: #0d1017;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    padding: 10px;
+    font-size: 13px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  }
+  textarea {
+    min-height: 360px;
+    resize: vertical;
+    line-height: 1.5;
+  }
+  button {
+    margin-top: 16px;
+    width: 100%;
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  button:disabled { opacity: 0.5; cursor: default; }
+  button:hover:not(:disabled) { filter: brightness(1.08); }
+  .checkbox-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 14px;
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .checkbox-row input { width: auto; }
+
+  .score-row {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    margin-bottom: 8px;
+  }
+  .score {
+    font-size: 40px;
+    font-weight: 700;
+  }
+  .score-label { color: var(--muted); font-size: 13px; }
+  .summary { color: var(--muted); font-size: 13px; margin-bottom: 16px; }
+
+  .metric-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 18px;
+  }
+  .metric {
+    background: #0d1017;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px;
+  }
+  .metric .value { font-size: 20px; font-weight: 700; }
+  .metric .label { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+  .section-title {
+    font-size: 13px;
+    font-weight: 600;
+    margin: 18px 0 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .badge {
+    font-size: 10px;
+    padding: 2px 7px;
+    border-radius: 999px;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+  .badge.high { background: rgba(240,85,92,0.15); color: var(--bad); }
+  .badge.medium { background: rgba(240,184,64,0.15); color: var(--warn); }
+  .badge.low { background: rgba(139,147,167,0.15); color: var(--muted); }
+  .badge.ok { background: rgba(62,207,142,0.15); color: var(--good); }
+
+  ul.issue-list { list-style: none; margin: 0; padding: 0; }
+  ul.issue-list li {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 12px;
+    margin-bottom: 8px;
+    font-size: 13px;
+  }
+  ul.issue-list li .top-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 4px;
+  }
+  ul.issue-list li .context {
+    color: var(--muted);
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 12px;
+  }
+  .empty-note { color: var(--muted); font-size: 13px; font-style: italic; }
+  .placeholder { color: var(--muted); font-size: 13px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Versight — AI Pre-Editor</h1>
+  <p>Prototype of the AI pre-editor module: readability + terminology + structure checks, plus an AI pass for procedural ambiguity and safety gaps.</p>
+</header>
+
+<main>
+  <section class="panel">
+    <h2>Document</h2>
+    <label for="docType">Document type</label>
+    <select id="docType">
+      <option value="SOP">SOP</option>
+      <option value="Work Instruction">Work Instruction</option>
+      <option value="Change Notice">Change Notice</option>
+      <option value="default">Other / generic</option>
+    </select>
+
+    <label for="docText">Document text</label>
+    <textarea id="docText" placeholder="Paste your SOP or work instruction text here...">Purpose
+This procedure describes how a team member should check the torque on the battery module fasteners.
+
+Scope
+This applies to the LFP cell line.
+
+Procedure
+1. The operator should make sure the torque wrench is calibrated.
+2. Tighten the fasteners to approx spec, checking as needed.
+3. If the reading looks loose, the fastener is re-torqued by the team member, and the result is logged by the team member in the traveler as soon as possible, before the unit is moved to the next station, unless the line lead says otherwise, in which case the team member should flag the unit for a quality hold and notify the shift supervisor immediately so that the root cause can be investigated before further units are processed down the line.
+4. Turn off the wrench when done.</textarea>
+
+    <div class="checkbox-row">
+      <input type="checkbox" id="skipAi" />
+      <label for="skipAi" style="margin:0;">Skip AI review (rule-based checks only, no API call)</label>
+    </div>
+
+    <button id="analyzeBtn">Analyze document</button>
+  </section>
+
+  <section class="panel" id="results">
+    <h2>Results</h2>
+    <p class="placeholder">Run an analysis to see the report here.</p>
+  </section>
+</main>
+
+<script>
+const API_BASE = "";
+
+document.getElementById("analyzeBtn").addEventListener("click", async () => {
+  const btn = document.getElementById("analyzeBtn");
+  const results = document.getElementById("results");
+  const text = document.getElementById("docText").value;
+  const documentType = document.getElementById("docType").value;
+  const skipAi = document.getElementById("skipAi").checked;
+
+  if (!text.trim()) {
+    results.innerHTML = "<h2>Results</h2><p class='placeholder'>Paste some document text first.</p>";
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = "Analyzing...";
+  results.innerHTML = "<h2>Results</h2><p class='placeholder'>Running rule-based checks and AI review...</p>";
+
+  try {
+    const res = await fetch(`${API_BASE}/analyze`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        text,
+        document_type: documentType,
+        skip_ai_review: skipAi,
+      }),
+    });
+    if (!res.ok) throw new Error(`Server returned ${res.status}`);
+    const data = await res.json();
+    render(data);
+  } catch (err) {
+    results.innerHTML = `<h2>Results</h2><p class='placeholder'>Error: ${err.message}. Is the backend running (uvicorn main:app --reload)?</p>`;
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "Analyze document";
+  }
+});
+
+function scoreColor(score) {
+  if (score >= 85) return "var(--good)";
+  if (score >= 65) return "var(--warn)";
+  return "var(--bad)";
+}
+
+function render(data) {
+  const results = document.getElementById("results");
+  const { overall_score, summary, readability, terminology_issues, structure, ai_suggestions } = data;
+
+  let html = `<h2>Results</h2>`;
+  html += `<div class="score-row"><span class="score" style="color:${scoreColor(overall_score)}">${overall_score}</span><span class="score-label">/ 100</span></div>`;
+  html += `<div class="summary">${summary}</div>`;
+
+  html += `<div class="metric-grid">
+    <div class="metric"><div class="value">${readability.flesch_kincaid_grade}</div><div class="label">Reading grade level</div></div>
+    <div class="metric"><div class="value">${readability.avg_sentence_length}</div><div class="label">Avg words / sentence</div></div>
+    <div class="metric"><div class="value">${readability.passive_voice_sentences.length}</div><div class="label">Passive voice sentences</div></div>
+  </div>`;
+
+  // Terminology
+  html += `<div class="section-title">Terminology compliance <span class="badge ${terminology_issues.length ? 'medium' : 'ok'}">${terminology_issues.length} found</span></div>`;
+  if (terminology_issues.length) {
+    html += "<ul class='issue-list'>" + terminology_issues.map(i => `
+      <li>
+        <div class="top-row"><strong>"${escapeHtml(i.found)}"</strong> → <span style="color:var(--good)">${escapeHtml(i.preferred)}</span></div>
+        <div class="context">${escapeHtml(i.context)}</div>
+      </li>
+    `).join("") + "</ul>";
+  } else {
+    html += "<p class='empty-note'>No flagged terms.</p>";
+  }
+
+  // Structure
+  const structOk = structure.missing_sections.length === 0 && !structure.out_of_order;
+  html += `<div class="section-title">Structure / template <span class="badge ${structOk ? 'ok' : 'medium'}">${structure.missing_sections.length} missing</span></div>`;
+  html += `<p class="empty-note" style="font-style:normal;">${structure.notes.join(" ")}</p>`;
+
+  // AI suggestions
+  html += `<div class="section-title">AI review (clarity, ambiguity, safety)</div>`;
+  if (ai_suggestions.length) {
+    html += "<ul class='issue-list'>" + ai_suggestions.map(s => `
+      <li>
+        <div class="top-row"><span class="badge ${s.severity}">${escapeHtml(s.severity)}</span><span style="color:var(--muted); font-size:11px; text-transform:uppercase;">${escapeHtml(s.category)}</span></div>
+        <div><strong>${escapeHtml(s.issue)}</strong></div>
+        <div class="context">"${escapeHtml(s.location || "")}" — ${escapeHtml(s.suggestion)}</div>
+      </li>
+    `).join("") + "</ul>";
+  } else {
+    html += "<p class='empty-note'>No AI suggestions (either none found, or AI review was skipped / no API key configured).</p>";
+  }
+
+  results.innerHTML = html;
+}
+
+function escapeHtml(str) {
+  const div = document.createElement("div");
+  div.textContent = str ?? "";
+  return div.innerHTML;
+}
+</script>
+</body>
+</html>
