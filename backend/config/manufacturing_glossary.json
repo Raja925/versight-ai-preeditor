@@ -1,0 +1,21 @@
+{
+  "employee": "team member",
+  "worker": "team member",
+  "manual": "work instruction",
+  "make sure": "verify",
+  "double check": "verify",
+  "turn off": "de-energize",
+  "turn on": "energize",
+  "unplug": "disconnect power",
+  "as needed": "per the interval specified in the referenced document",
+  "asap": "immediately",
+  "etc": "[list explicitly, do not use etc. in a procedure]",
+  "should": "must",
+  "may want to": "must",
+  "approx": "approximately",
+  "tighten": "torque",
+  "loose": "not torqued to specification",
+  "eyeball it": "verify against the specified tolerance",
+  "a little bit": "[state the exact quantity, time, or tolerance]",
+  "if possible": "[state the condition explicitly, or remove if the step is mandatory]"
+}
