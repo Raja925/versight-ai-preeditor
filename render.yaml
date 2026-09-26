@@ -1,0 +1,19 @@
+# Render Blueprint — https://render.com/docs/blueprint-spec
+# In the Render dashboard: New -> Blueprint -> point at this repo, or use the
+# Render MCP connector's create_web_service tool with these same settings.
+services:
+  - type: web
+    name: versight-ai-preeditor
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    plan: free
+    envVars:
+      - key: ANTHROPIC_API_KEY
+        sync: false   # set manually in the Render dashboard — never commit real keys
+      - key: RATE_LIMIT_MAX_REQUESTS
+        value: "20"
+      - key: RATE_LIMIT_WINDOW_SECONDS
+        value: "3600"
+      - key: MAX_TEXT_LENGTH
+        value: "20000"
+    healthCheckPath: /health
