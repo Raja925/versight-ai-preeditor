@@ -1,0 +1,35 @@
+{
+  "SOP": [
+    "Purpose",
+    "Scope",
+    "Definitions",
+    "Responsibilities",
+    "Required Materials and Equipment",
+    "Safety Precautions",
+    "Procedure",
+    "References",
+    "Revision History"
+  ],
+  "Work Instruction": [
+    "Purpose",
+    "Scope",
+    "Required Tools and PPE",
+    "Safety Warnings",
+    "Steps",
+    "Quality Checks",
+    "References"
+  ],
+  "Change Notice": [
+    "Change Summary",
+    "Reason for Change",
+    "Affected Documents",
+    "Effective Date",
+    "Approval"
+  ],
+  "default": [
+    "Purpose",
+    "Scope",
+    "Procedure",
+    "References"
+  ]
+}
